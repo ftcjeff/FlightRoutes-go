@@ -25,4 +25,11 @@ var routes = Routes{
 		"/route/{fromAirport}/{toAirport}",
 		Show,
 	},
+
+	Route{
+		"ShowAirline",
+		"GET",
+		"/airline/{airlineCode}",
+		ShowAirline,
+	},
 }

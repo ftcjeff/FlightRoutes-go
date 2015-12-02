@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"strings"
 )
@@ -15,6 +14,12 @@ func check(e error) {
 }
 
 func init() {
+	tableName := "routes"
+	tableFields := []string{"Airline", "AirlineId", "SourceAirportCode", "SourceAirportId", "DestAirportCode", "DestAirportId", "Codeshare", "Stops", "Equipment"}
+
+	mysql := GetServiceURI("mysql")
+	CreateTable(mysql, "picasso", "picasso", "picasso", tableName)
+
 	dat, err := ioutil.ReadFile("routes.csv")
 	check(err)
 
@@ -24,35 +29,7 @@ func init() {
 		if strings.Contains(port, ",") {
 			tokens := strings.Split(port, ",")
 
-			go RepoCreateRoute(
-				FlightRoute{Airline: tokens[0],
-					AirlineId:         tokens[1],
-					SourceAirportCode: tokens[2],
-					SourceAirportId:   tokens[3],
-					DestAirportCode:   tokens[4],
-					DestAirportId:     tokens[5],
-					Codeshare:         tokens[6],
-					Stops:             tokens[7],
-					Equipment:         tokens[8]})
+			AddRow(tableName, tableFields, tokens)
 		}
 	}
-}
-
-func RepoFindRoutes(fromAirport, toAirport string) FlightRoutes {
-	var rv FlightRoutes
-
-	for _, t := range flightRoutes {
-		if strings.ToLower(t.SourceAirportCode) == strings.ToLower(fromAirport) &&
-			strings.ToLower(t.DestAirportCode) == strings.ToLower(toAirport) {
-			rv = append(rv, t)
-		}
-	}
-
-	return rv
-}
-
-func RepoCreateRoute(t FlightRoute) FlightRoute {
-	fmt.Println("Creating ", t)
-	flightRoutes = append(flightRoutes, t)
-	return t
 }
